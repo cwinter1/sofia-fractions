@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>שברים – סופיה ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF6B9D;
+    --purple: #9B5DE5;
+    --blue: #00BBF9;
+    --yellow: #FEE440;
+    --green: #00C896;
+    --dark: #1a1a2e;
+    --radius: 18px;
+    --card: #fff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: #f4f0ff;
+    color: #1a1a2e;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== SPLASH ===== */
+  #splash {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark);
+    text-align: center;
+    padding: 30px 24px;
+  }
+  .splash-emoji { font-size: 72px; margin-bottom: 16px; animation: bounce 1.8s infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  #splash h1 { font-size: 42px; font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 10px; }
+  #splash h1 span { color: var(--yellow); }
+  #splash p { color: #aaa; font-size: 16px; margin-bottom: 32px; }
+
+  .topic-list { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; margin-bottom: 32px; }
+  .topic-item {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .topic-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .btn-start {
+    background: var(--yellow);
+    color: var(--dark);
+    border: none;
+    border-radius: 50px;
+    padding: 16px 48px;
+    font-size: 20px;
+    font-weight: 900;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+    transition: transform 0.1s;
+  }
+  .btn-start:active { transform: scale(0.97); }
+
+  /* ===== PROGRESS BAR ===== */
+  #progress-bar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--dark);
+    padding: 10px 20px 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #progress-track { flex: 1; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+  #progress-fill { height: 100%; background: var(--yellow); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+  #progress-label { color: #fff; font-size: 13px; font-weight: 700; white-space: nowrap; }
+
+  /* ===== SECTION HEADER ===== */
+  .section-banner {
+    margin: 0;
+    padding: 14px 20px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--dark);
+    color: #fff;
+  }
+  .section-banner .icon { font-size: 24px; }
+  .section-banner h2 { font-size: 16px; font-weight: 900; }
+  .section-banner p { font-size: 12px; color: #aaa; }
+
+  /* ===== QUESTION CARD ===== */
+  .q-wrap { padding: 12px 16px; }
+
+  .q-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 10px;
+    transition: box-shadow 0.2s;
+  }
+  .q-card.answered-correct { border: 2px solid var(--green); }
+  .q-card.answered-wrong   { border: 2px solid var(--pink); }
+
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .q-num { font-size: 12px; font-weight: 700; color: #999; }
+  .q-stars { font-size: 13px; }
+
+  .q-text {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    direction: rtl;
+  }
+
+  /* Visual boxes */
+  .vf-row { display: flex; gap: 4px; flex-wrap: wrap; margin: 6px 0 10px; }
+  .vf-box { width: 28px; height: 28px; border: 2.5px solid #333; border-radius: 4px; background: #fff; }
+  .vf-box.filled { background: var(--purple); border-color: var(--purple); }
+
+  /* Fraction */
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15; margin: 0 4px; }
+  .frac .num, .frac .den { font-weight: 900; font-size: 15px; display: block; text-align: center; line-height: 1.2; }
+  .frac .bar { display: block; width: 100%; border-top: 2.5px solid #000; margin: 2px 0; }
+
+  /* Answer input */
+  .q-input {
+    width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 18px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 700;
+    direction: rtl;
+    background: #fafafa;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .q-input:focus { border-color: var(--purple); background: #fff; }
+  .q-input.correct { border-color: var(--green); background: #f0fff8; }
+  .q-input.wrong   { border-color: var(--pink);  background: #fff0f5; }
+
+  .q-feedback {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    display: none;
+  }
+  .q-feedback.show { display: block; }
+  .q-feedback.ok  { color: var(--green); }
+  .q-feedback.err { color: var(--pink); }
+
+  /* Check button */
+  .btn-check {
+    margin-top: 10px;
+    width: 100%;
+    padding: 12px;
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-check:active { transform: scale(0.98); }
+  .btn-check:disabled { opacity: 0.35; }
+
+  /* ===== RESULTS ===== */
+  #results {
+    display: none;
+    min-height: 100vh;
+    background: var(--dark);
+    padding: 40px 24px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #results.show { display: flex; }
+  .result-emoji { font-size: 80px; margin-bottom: 16px; }
+  .result-score { font-size: 64px; font-weight: 900; color: var(--yellow); margin-bottom: 4px; }
+  .result-label { font-size: 18px; color: #aaa; margin-bottom: 32px; }
+  .result-msg { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .result-sub { font-size: 15px; color: #aaa; margin-bottom: 40px; }
+
+  .result-breakdown {
+    width: 100%; max-width: 360px;
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 40px;
+  }
+  .rb-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 14px;
+  }
+  .rb-score { font-weight: 900; color: var(--yellow); }
+
+  .btn-retry {
+    background: var(--yellow);
+    color: var(--dark);
+    border: none;
+    border-radius: 50px;
+    padding: 14px 40px;
+    font-size: 18px;
+    font-weight: 900;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  /* ===== TIP ===== */
+  .tip-box {
+    margin: 0 16px 10px;
+    border: 2px solid #e8e0ff;
+    border-right: 5px solid var(--purple);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    background: #f9f7ff;
+    line-height: 1.5;
+  }
+
+  #quiz-screen { display: none; }
+  #quiz-screen.show { display: block; }
+
+  .submit-all-wrap { padding: 20px 16px 40px; }
+  .btn-submit-all {
+    width: 100%;
+    padding: 16px;
+    background: var(--dark);
+    color: var(--yellow);
+    border: 3px solid var(--yellow);
+    border-radius: var(--radius);
+    font-size: 20px;
+    font-weight: 900;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+  <div class="splash-emoji">🍕</div>
+  <h1>שברים<br><span>של סופיה</span></h1>
+  <p>53 תרגילים • 6 נושאים • ענו ובדקי!</p>
+  <div class="topic-list">
+    <div class="topic-item"><div class="topic-dot" style="background:#FF6B9D"></div>משמעות השבר הפשוט</div>
+    <div class="topic-item"><div class="topic-dot" style="background:#9B5DE5"></div>מספרים מעורבים</div>
+    <div class="topic-item"><div class="topic-dot" style="background:#00BBF9"></div>חיבור וחיסור</div>
+    <div class="topic-item"><div class="topic-dot" style="background:#FEE440"></div>השוואת שברים</div>
+    <div class="topic-item"><div class="topic-dot" style="background:#00C896"></div>כפל שלם בשבר</div>
+    <div class="topic-item"><div class="topic-dot" style="background:#FF6B9D"></div>שבר כלחק מכמות</div>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">בואי נתחיל! 🚀</button>
+</div>
+
+<!-- ===== QUIZ SCREEN ===== -->
+<div id="quiz-screen">
+  <div id="progress-bar-wrap">
+    <div id="progress-track"><div id="progress-fill"></div></div>
+    <div id="progress-label">0 / 53</div>
+  </div>
+  <div id="questions-container"></div>
+  <div class="submit-all-wrap">
+    <button class="btn-submit-all" onclick="showResults()">סיימתי – תני לי ציון! 🎯</button>
+  </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="results">
+  <div class="result-emoji" id="result-emoji">🏆</div>
+  <div class="result-score" id="result-score">0/53</div>
+  <div class="result-label">תרגילים נכונים</div>
+  <div class="result-msg" id="result-msg"></div>
+  <div class="result-sub" id="result-sub"></div>
+  <div class="result-breakdown" id="result-breakdown"></div>
+  <button class="btn-retry" onclick="location.reload()">רוצה לנסות שוב 🔄</button>
+</div>
+
+<script>
+const sections = [
+  {
+    id: 1,
+    icon: "✏️",
+    title: "חלק א׳ – משמעות השבר הפשוט",
+    sub: "מה השבר אומר? מונה, מכנה, חלקים שווים",
+    tip: "💡 זכרי: המכנה = לכמה חלקים חילקנו, המונה = כמה לקחנו.",
+    color: "#FF6B9D",
+    questions: [
+      { id:1,  stars:1, text: "בציור יש 4 ריבועים: 2 צבועים ו-2 ריקים.<br>כתבי את השבר המתאר את הצבועים:", answers:["2/4","1/2"] },
+      { id:2,  stars:1, text: "בציור יש 3 ריבועים: 1 צבוע ו-2 ריקים.<br>כתבי את השבר:", answers:["1/3"] },
+      { id:3,  stars:1, text: "בציור יש 6 ריבועים: 3 צבועים ו-3 ריקים.<br>כתבי את השבר:", answers:["3/6","1/2"] },
+      { id:4,  stars:1, text: "בשבר 3/8 — מה המכנה?", answers:["8"] },
+      { id:5,  stars:1, text: "בשבר 5/7 — מה המונה?", answers:["5"] },
+      { id:6,  stars:2, text: "בכיתה יש 10 ילדים. 3 מהם חולים. מה השבר המתאר את החולים?", answers:["3/10"] },
+      { id:7,  stars:2, text: "אכלו 4/6 מהעוגה. כמה נשאר?", answers:["2/6","1/3"] },
+      { id:8,  stars:2, text: "מה שווה 4/4 ?", answers:["1","שלם אחד","1 שלם"] },
+      { id:9,  stars:2, text: "לדנה יש 8 עפרונות. היא נתנה 3 לחברה. כתבי שבר שמתאר כמה נתנה:", answers:["3/8"] },
+      { id:10, stars:3, text: "שרה אכלה 2/6 מהפיצה. דנה אכלה 3/6. כמה נשאר?", answers:["1/6"] },
+    ]
+  },
+  {
+    id: 2,
+    icon: "🔄",
+    title: "חלק ב׳ – מספרים מעורבים",
+    sub: "שבר גדול ↔ מספר שלם + שבר",
+    tip: "💡 שבר גדול → מספר מעורב: מחלקים מונה במכנה. 11÷3 = 3 שארית 2 → 3 ו-2/3",
+    color: "#9B5DE5",
+    questions: [
+      { id:11, stars:1, text: "7/3 = ?", answers:["2 ו-1/3","2 1/3","7/3"] },
+      { id:12, stars:1, text: "9/4 = ?", answers:["2 ו-1/4","2 1/4","9/4"] },
+      { id:13, stars:1, text: "11/5 = ?", answers:["2 ו-1/5","2 1/5","11/5"] },
+      { id:14, stars:2, text: "13/4 = ?", answers:["3 ו-1/4","3 1/4","13/4"] },
+      { id:15, stars:2, text: "17/6 = ?", answers:["2 ו-5/6","2 5/6","17/6"] },
+      { id:16, stars:2, text: "23/8 = ?", answers:["2 ו-7/8","2 7/8","23/8"] },
+      { id:17, stars:1, text: "2 ו-1/3 = ? (כשבר גדול)", answers:["7/3"] },
+      { id:18, stars:1, text: "3 ו-2/5 = ? (כשבר גדול)", answers:["17/5"] },
+      { id:19, stars:2, text: "4 ו-3/7 = ? (כשבר גדול)", answers:["31/7"] },
+      { id:20, stars:2, text: "5 ו-1/4 = ? (כשבר גדול)", answers:["21/4"] },
+      { id:21, stars:3, text: "6 ו-5/8 = ? (כשבר גדול)", answers:["53/8"] },
+      { id:22, stars:3, text: "במחסן 2 ו-3/4 ק\"ג קמח. כמה רבעים (1/4) יש בסך הכל?", answers:["11","11/4"] },
+    ]
+  },
+  {
+    id: 3,
+    icon: "➕",
+    title: "חלק ג׳ – חיבור וחיסור שברים",
+    sub: "מכנה זהה, מספרים מעורבים, מילוליות",
+    tip: "💡 מכנה זהה: מחברים רק את המונים! המכנה נשאר.",
+    color: "#00BBF9",
+    questions: [
+      { id:23, stars:1, text: "2/7 + 3/7 = ?", answers:["5/7"] },
+      { id:24, stars:1, text: "5/9 − 2/9 = ?", answers:["3/9","1/3"] },
+      { id:25, stars:1, text: "3/8 + 4/8 = ?", answers:["7/8"] },
+      { id:26, stars:1, text: "7/10 − 3/10 = ?", answers:["4/10","2/5"] },
+      { id:27, stars:2, text: "4/6 + 5/6 = ?", answers:["9/6","1 ו-3/6","1 ו-1/2","1 1/2","3/2","1 3/6","1 2/4"] },
+      { id:28, stars:2, text: "1 − 3/5 = ?", answers:["2/5"] },
+      { id:29, stars:2, text: "2 ו-1/4 + 1 ו-2/4 = ?", answers:["3 ו-3/4","3 3/4","15/4"] },
+      { id:30, stars:2, text: "3 ו-3/5 − 1 ו-1/5 = ?", answers:["2 ו-2/5","2 2/5","12/5"] },
+      { id:31, stars:3, text: "4 ו-2/6 + 2 ו-5/6 = ?", answers:["7 ו-1/6","7 1/6","43/6"] },
+      { id:32, stars:3, text: "5 ו-3/5 − 2 ו-1/5 = ?", answers:["3 ו-2/5","3 2/5","17/5"] },
+      { id:33, stars:2, text: "נועה שתתה 3/8 ליטר בבוקר ו-5/8 ליטר בצהריים. כמה שתתה בסך הכל?", answers:["8/8","1","ליטר אחד","1 ליטר"] },
+      { id:34, stars:2, text: "דניאל אכל 2/7 מהעוגה ואחותו 3/7. כמה נשאר?", answers:["2/7"] },
+      { id:35, stars:4, text: "לרוני יש 2 ו-3/4 מטר חוט. השתמשה ב-1 ו-1/4 מטר. כמה נשאר?", answers:["1 ו-2/4","1 ו-1/2","1 2/4","1 1/2","6/4","3/2"] },
+    ]
+  },
+  {
+    id: 4,
+    icon: "⚖️",
+    title: "חלק ד׳ – השוואת שברים",
+    sub: "שים > < = בין השברים",
+    tip: "💡 מכנה זהה: הסתכלי על המונים. מכנה שונה: הפכי למכנה משותף.",
+    color: "#FEE440",
+    questions: [
+      { id:36, stars:1, text: "3/5 ○ 1/5 — שימי > < =", answers:[">"] },
+      { id:37, stars:1, text: "4/7 ○ 4/9 — שימי > < =", answers:[">"] },
+      { id:38, stars:2, text: "2/3 ○ 3/4 — שימי > < =", answers:["<"] },
+      { id:39, stars:2, text: "5/8 ○ 1/2 — שימי > < =", answers:[">"] },
+      { id:40, stars:3, text: "סדרי מהקטן לגדול: 3/4, 1/2, 7/8, 1/4", answers:["1/4, 1/2, 3/4, 7/8","1/4 1/2 3/4 7/8"] },
+      { id:41, stars:3, text: "2 ו-1/3 ○ 2 ו-2/5 — שימי > < =", answers:["<"] },
+    ]
+  },
+  {
+    id: 5,
+    icon: "✖️",
+    title: "חלק ה׳ – כפל שלם בשבר",
+    sub: "n × שבר = ?",
+    tip: "💡 כלל: n × a/b = (n×a)/b. לדוגמה: 3 × 2/5 = 6/5 = 1 ו-1/5",
+    color: "#00C896",
+    questions: [
+      { id:42, stars:1, text: "4 × 1/3 = ?", answers:["4/3","1 ו-1/3","1 1/3"] },
+      { id:43, stars:2, text: "5 × 2/4 = ?", answers:["10/4","5/2","2 ו-2/4","2 ו-1/2","2 1/2","2 2/4"] },
+      { id:44, stars:2, text: "6 × 3/8 = ?", answers:["18/8","9/4","2 ו-2/8","2 ו-1/4","2 2/8","2 1/4"] },
+      { id:45, stars:3, text: "7 × 3/5 = ? (כמספר מעורב)", answers:["21/5","4 ו-1/5","4 1/5"] },
+      { id:46, stars:3, text: "8 ילדים, לכל אחד 3/4 כוס מיץ. כמה כוסות בסך הכל?", answers:["6","24/4","6 כוסות"] },
+      { id:47, stars:4, text: "9 × 2/3 ק\"מ = ?", answers:["18/3","6","6 ק\"מ","6 קילומטר"] },
+    ]
+  },
+  {
+    id: 6,
+    icon: "🔢",
+    title: "חלק ו׳ – שבר כלחק מכמות",
+    sub: "מה זה a/b מ-N?",
+    tip: "💡 כלל: a/b מ-N = N÷b×a. לדוגמה: 2/3 מ-12 = 12÷3×2 = 8",
+    color: "#FF6B9D",
+    questions: [
+      { id:48, stars:2, text: "1/2 מ-20 = ?", answers:["10"] },
+      { id:49, stars:2, text: "1/4 מ-24 = ?", answers:["6"] },
+      { id:50, stars:2, text: "3/4 מ-20 = ?", answers:["15"] },
+      { id:51, stars:3, text: "2/5 מ-35 = ?", answers:["14"] },
+      { id:52, stars:3, text: "בכיתה 30 תלמידים. 2/3 מהם בנות. כמה בנות?", answers:["20","20 בנות"] },
+      { id:53, stars:4, text: "לסופיה 48 מדבקות. נתנה 3/8 לחברות. כמה נשאר לה?", answers:["30","30 מדבקות"] },
+    ]
+  }
+];
+
+const answers = {};
+const checked = {};
+
+function normalize(s) {
+  return s.trim().replace(/\s+/g,' ').replace(/‪|‬/g,'').toLowerCase();
+}
+
+function checkAnswer(qid, correctList) {
+  const input = document.getElementById('input-' + qid);
+  const feedback = document.getElementById('feedback-' + qid);
+  const card = document.getElementById('card-' + qid);
+  const val = normalize(input.value);
+  if (!val) return;
+
+  const correct = correctList.some(a => normalize(a) === val);
+  checked[qid] = correct;
+  answers[qid] = val;
+
+  input.classList.remove('correct','wrong');
+  feedback.classList.remove('show','ok','err');
+
+  if (correct) {
+    input.classList.add('correct');
+    feedback.textContent = '✓ נכון! כל הכבוד 🎉';
+    feedback.classList.add('show','ok');
+    card.classList.add('answered-correct');
+  } else {
+    input.classList.add('wrong');
+    feedback.textContent = '✗ לא מדויק — נסי שוב!';
+    feedback.classList.add('show','err');
+    card.classList.add('answered-wrong');
+  }
+
+  input.disabled = correct;
+  document.getElementById('btn-' + qid).disabled = correct;
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = 53;
+  const done = Object.keys(checked).filter(k => checked[k]).length;
+  document.getElementById('progress-fill').style.width = (done/total*100) + '%';
+  document.getElementById('progress-label').textContent = done + ' / ' + total;
+}
+
+function buildQuiz() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+
+  sections.forEach(sec => {
+    const banner = document.createElement('div');
+    banner.className = 'section-banner';
+    banner.style.borderTop = '4px solid ' + sec.color;
+    banner.innerHTML = `<div class="icon">${sec.icon}</div><div><h2>${sec.title}</h2><p>${sec.sub}</p></div>`;
+    container.appendChild(banner);
+
+    const tip = document.createElement('div');
+    tip.className = 'tip-box';
+    tip.innerHTML = sec.tip;
+    container.appendChild(tip);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'q-wrap';
+
+    sec.questions.forEach(q => {
+      const stars = '⭐'.repeat(q.stars);
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      card.id = 'card-' + q.id;
+      card.innerHTML = `
+        <div class="q-meta">
+          <span class="q-num">תרגיל ${q.id}</span>
+          <span class="q-stars">${stars}</span>
+        </div>
+        <div class="q-text">${q.text}</div>
+        <input class="q-input" id="input-${q.id}" type="text" placeholder="התשובה שלך..." autocomplete="off" autocorrect="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter'){document.getElementById('btn-${q.id}').click()}"
+        >
+        <div class="q-feedback" id="feedback-${q.id}"></div>
+        <button class="btn-check" id="btn-${q.id}" onclick="checkAnswer(${q.id}, ${JSON.stringify(q.answers)})">בדקי ✓</button>
+      `;
+      wrap.appendChild(card);
+    });
+
+    container.appendChild(wrap);
+  });
+}
+
+function startQuiz() {
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('quiz-screen').classList.add('show');
+  buildQuiz();
+  updateProgress();
+}
+
+function showResults() {
+  const total = 53;
+  let correct = 0;
+  const sectionScores = sections.map(sec => {
+    let s = 0;
+    sec.questions.forEach(q => { if (checked[q.id]) s++; });
+    correct += s;
+    return { title: sec.title, icon: sec.icon, score: s, total: sec.questions.length };
+  });
+
+  document.getElementById('quiz-screen').classList.remove('show');
+  const res = document.getElementById('results');
+  res.classList.add('show');
+
+  const pct = Math.round(correct / total * 100);
+  let emoji = '🌱', msg = 'יש עוד מה לתרגל!', sub = 'חזרי על הנושאים ונסי שוב 💪';
+  if (pct >= 95) { emoji='🏆'; msg='מושלם לחלוטין!'; sub='את גאון שברים! 🎉'; }
+  else if (pct >= 80) { emoji='🌟'; msg='כל הכבוד!'; sub='עבודה מעולה סופיה!'; }
+  else if (pct >= 60) { emoji='😊'; msg='טוב מאוד!'; sub='עוד קצת תרגול ותהיי מושלמת!'; }
+  else if (pct >= 40) { emoji='💪'; msg='המשיכי להתאמץ!'; sub='את בדרך הנכונה!'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-score').textContent = correct + '/' + total;
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('result-sub').textContent = sub;
+
+  const bd = document.getElementById('result-breakdown');
+  bd.innerHTML = sectionScores.map(s =>
+    `<div class="rb-row"><span>${s.icon} ${s.title.replace(/חלק .׳ – /,'')}</span><span class="rb-score">${s.score}/${s.total}</span></div>`
+  ).join('');
+}
+</script>
+</body>
+</html>
