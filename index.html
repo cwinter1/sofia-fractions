@@ -433,14 +433,22 @@ function normalize(s) {
   return s.trim().replace(/\s+/g,' ').replace(/‪|‬/g,'').toLowerCase();
 }
 
-function checkAnswer(qid, correctList) {
+function getAnswers(qid) {
+  for (const sec of sections) {
+    const q = sec.questions.find(q => q.id === qid);
+    if (q) return q.answers;
+  }
+  return [];
+}
+
+function checkAnswer(qid) {
   const input = document.getElementById('input-' + qid);
   const feedback = document.getElementById('feedback-' + qid);
   const card = document.getElementById('card-' + qid);
   const val = normalize(input.value);
   if (!val) return;
 
-  const correct = correctList.some(a => normalize(a) === val);
+  const correct = getAnswers(qid).some(a => normalize(a) === val);
   checked[qid] = correct;
   answers[qid] = val;
 
@@ -505,7 +513,7 @@ function buildQuiz() {
           onkeydown="if(event.key==='Enter'){document.getElementById('btn-${q.id}').click()}"
         >
         <div class="q-feedback" id="feedback-${q.id}"></div>
-        <button class="btn-check" id="btn-${q.id}" onclick="checkAnswer(${q.id}, ${JSON.stringify(q.answers)})">בדקי ✓</button>
+        <button class="btn-check" id="btn-${q.id}" onclick="checkAnswer(${q.id})">בדקי ✓</button>
       `;
       wrap.appendChild(card);
     });
